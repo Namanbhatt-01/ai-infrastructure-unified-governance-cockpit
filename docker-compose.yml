@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  unified_aggregator:
+    build:
+      context: ./aggregator
+      dockerfile: Dockerfile
+    container_name: tier6_unified_aggregator
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/healthz"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.75'
+          memory: 350M
+    networks:
+      - unified_ops_net
+
+  prometheus:
+    image: prom/prometheus:v2.48.0
+    container_name: tier6_prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=1d'
+      - '--web.enable-lifecycle'
+    deploy:
+      resources:
+        limits:
+          cpus: '0.75'
+          memory: 400M
+    depends_on:
+      unified_aggregator:
+        condition: service_healthy
+    networks:
+      - unified_ops_net
+
+  grafana:
+    image: grafana/grafana:10.2.0
+    container_name: tier6_grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+    volumes:
+      - ./config/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./config/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./dashboards:/var/lib/grafana/dashboards:ro
+    deploy:
+      resources:
+        limits:
+          cpus: '0.75'
+          memory: 450M
+    depends_on:
+      - prometheus
+    networks:
+      - unified_ops_net
+
+networks:
+  unified_ops_net:
+    name: tier6_unified_ops_network
+    driver: bridge

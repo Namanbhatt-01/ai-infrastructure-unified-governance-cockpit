@@ -1,0 +1,12 @@
+global:
+  scrape_interval: 2s
+  evaluation_interval: 2s
+
+scrape_configs:
+  - job_name: 'unified_cockpit_aggregator'
+    scrape_interval: 1s
+    static_configs:
+      - targets: ['unified_aggregator:8080']
+        labels:
+          tier: 'capstone'
+          environment: 'production-ai-fabric'

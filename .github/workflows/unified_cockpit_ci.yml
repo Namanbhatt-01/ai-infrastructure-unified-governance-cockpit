@@ -1,0 +1,44 @@
+name: Tier 6 - Unified AI Infrastructure Cockpit CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate-unified-cockpit:
+    name: validate-unified-cockpit
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Launch Unified Cockpit Stack
+        run: |
+          docker compose up -d --build
+
+      - name: Await Service Convergence
+        run: |
+          echo "Waiting for Aggregator, Prometheus, and Grafana to become healthy..."
+          timeout 60 bash -c 'until curl -sf http://localhost:8080/healthz && curl -sf http://localhost:9090/-/healthy && curl -sf http://localhost:3000/api/health; do echo "Waiting..."; sleep 3; done'
+
+      - name: Execute End-to-End Verification Testbed
+        run: |
+          python verify_unified_cockpit.py
+
+      - name: Teardown Stack
+        if: always()
+        run: |
+          docker compose down -v
