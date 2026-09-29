@@ -1,0 +1,41 @@
+{
+  "schema_version": "1.0",
+  "experiment": {
+    "id": "fabric-queue-001",
+    "name": "Lossless RoCEv2 Queue Priority and ECN Marking"
+  },
+  "execution": {
+    "run_id": "fabric-20260929-110000",
+    "timestamp": "2026-09-29T12:00:00Z",
+    "environment": "linux-network-namespaces",
+    "platform": "darwin-arm64"
+  },
+  "measurements": [
+    {
+      "metric": "queue_depth_q3_bytes",
+      "value": 18400.0,
+      "target": 65536.0,
+      "mode": "emulated"
+    },
+    {
+      "metric": "ecn_marked_packets_total",
+      "value": 42.0,
+      "mode": "measured"
+    }
+  ],
+  "assertions": [
+    {
+      "id": "FABRIC-ASSERT-001",
+      "name": "RoCEv2 DSCP 26 to Q3 Priority Mapping",
+      "passed": true,
+      "detail": "Packets with DSCP 26 mapped strictly to egress band 3."
+    },
+    {
+      "id": "FABRIC-ASSERT-002",
+      "name": "Proactive ECN CE Marking at Kmin",
+      "passed": true,
+      "detail": "ECN marking triggered at 64KB before PFC pause threshold."
+    }
+  ],
+  "result": "passed"
+}

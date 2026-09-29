@@ -1,0 +1,44 @@
+{
+  "schema_version": "1.0",
+  "experiment": {
+    "id": "governance-cockpit-001",
+    "name": "Unified AI Infrastructure Control Plane Verification"
+  },
+  "execution": {
+    "run_id": "gov-20260929-130112",
+    "timestamp": "2026-09-29T13:01:12.655152Z",
+    "environment": "docker-compose",
+    "platform": "darwin-arm64"
+  },
+  "assertions": [
+    {
+      "name": "Control Plane Health & Readiness",
+      "passed": true
+    },
+    {
+      "name": "Evidence Envelope Ingestion API",
+      "passed": true
+    },
+    {
+      "name": "Governance Control Evaluation & Provenance",
+      "passed": true
+    },
+    {
+      "name": "Derived Governance Posture Summary",
+      "passed": true
+    },
+    {
+      "name": "Negative Path: Failure State Propagation",
+      "passed": true
+    },
+    {
+      "name": "Prometheus Metric Scrape & Indexing",
+      "passed": true
+    },
+    {
+      "name": "Grafana Engine Health",
+      "passed": true
+    }
+  ],
+  "result": "passed"
+}

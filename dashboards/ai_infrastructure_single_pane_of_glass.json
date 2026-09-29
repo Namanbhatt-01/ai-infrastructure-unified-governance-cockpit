@@ -13,7 +13,7 @@
       "collapsed": false,
       "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
       "id": 100,
-      "title": "🏛️ EXECUTIVE SUMMARY — AI INFRASTRUCTURE COCKPIT (TIER 6)",
+      "title": "EXECUTIVE CONTROL PLANE POSTURE — LAB 07 EVIDENCE SYNTHESIS",
       "type": "row"
     },
     {
@@ -22,17 +22,17 @@
         "defaults": {
           "color": { "mode": "thresholds" },
           "mappings": [
-            { "options": { "0": { "color": "green", "text": "OPTIMAL" }, "1": { "color": "red", "text": "DEGRADED" } }, "type": "value" }
+            { "options": { "1": { "color": "green", "text": "PASS" }, "0": { "color": "yellow", "text": "DEGRADED / STALE" }, "-1": { "color": "red", "text": "FAIL" } }, "type": "value" }
           ],
-          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "red", "value": 1 }] }
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "yellow", "value": 0 }, { "color": "green", "value": 1 }] }
         }
       },
-      "gridPos": { "h": 4, "w": 4, "x": 0, "y": 1 },
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 1 },
       "id": 1,
       "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "auto", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
       "pluginVersion": "10.2.0",
-      "targets": [{ "expr": "ai_fabric_cluster_health_status", "legendFormat": "Fabric Status", "refId": "A" }],
-      "title": "Fabric Health Status",
+      "targets": [{ "expr": "ai_governance_overall_status", "legendFormat": "Overall Posture", "refId": "A" }],
+      "title": "Overall Governance Status",
       "type": "stat"
     },
     {
@@ -40,15 +40,15 @@
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
-          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 1 }, { "color": "red", "value": 5 }] },
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "green", "value": 1 }] },
           "unit": "short"
         }
       },
-      "gridPos": { "h": 4, "w": 4, "x": 4, "y": 1 },
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 1 },
       "id": 2,
       "options": { "colorMode": "value", "graphMode": "area", "justifyMode": "auto", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
-      "targets": [{ "expr": "sum(ai_secops_active_security_threats)", "legendFormat": "Active Threats", "refId": "A" }],
-      "title": "SecOps Threat Alerts",
+      "targets": [{ "expr": "ai_governance_passing_controls_count", "legendFormat": "Passing Controls", "refId": "A" }],
+      "title": "Passing Controls",
       "type": "stat"
     },
     {
@@ -60,11 +60,11 @@
           "unit": "short"
         }
       },
-      "gridPos": { "h": 4, "w": 4, "x": 8, "y": 1 },
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 1 },
       "id": 3,
       "options": { "colorMode": "value", "graphMode": "area", "justifyMode": "auto", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
-      "targets": [{ "expr": "ai_rag_cross_tenant_leaks_total", "legendFormat": "Leaks", "refId": "A" }],
-      "title": "Zero-Trust RAG Leaks",
+      "targets": [{ "expr": "ai_governance_failing_controls_count", "legendFormat": "Failing Controls", "refId": "A" }],
+      "title": "Failing Controls (Alerts)",
       "type": "stat"
     },
     {
@@ -72,54 +72,137 @@
       "fieldConfig": {
         "defaults": {
           "color": { "mode": "thresholds" },
-          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 50 }, { "color": "red", "value": 100 }] },
-          "unit": "ms"
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }, { "color": "yellow", "value": 1 }] },
+          "unit": "short"
         }
       },
-      "gridPos": { "h": 4, "w": 4, "x": 12, "y": 1 },
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 1 },
       "id": 4,
-      "options": { "colorMode": "value", "graphMode": "area", "justifyMode": "auto", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
-      "targets": [{ "expr": "ai_synthetic_path_latency_ms{target='inference-us-east'}", "legendFormat": "US-East Latency", "refId": "A" }],
-      "title": "AI Inference Latency (P99)",
-      "type": "stat"
-    },
-    {
-      "datasource": { "type": "prometheus", "uid": "Prometheus" },
-      "fieldConfig": {
-        "defaults": {
-          "color": { "mode": "thresholds" },
-          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "green", "value": 99.5 }] },
-          "unit": "percent"
-        }
-      },
-      "gridPos": { "h": 4, "w": 4, "x": 16, "y": 1 },
-      "id": 5,
       "options": { "colorMode": "value", "graphMode": "none", "justifyMode": "auto", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
-      "targets": [{ "expr": "ai_endpoint_synthetic_availability_percent", "legendFormat": "SLO Availability", "refId": "A" }],
-      "title": "Synthetic AI Path SLO",
-      "type": "stat"
-    },
-    {
-      "datasource": { "type": "prometheus", "uid": "Prometheus" },
-      "fieldConfig": {
-        "defaults": {
-          "color": { "mode": "thresholds" },
-          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "green", "value": 100 }] },
-          "unit": "percent"
-        }
-      },
-      "gridPos": { "h": 4, "w": 4, "x": 20, "y": 1 },
-      "id": 6,
-      "options": { "colorMode": "value", "graphMode": "none", "justifyMode": "auto", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
-      "targets": [{ "expr": "ai_governance_compliance_score", "legendFormat": "Compliance Score", "refId": "A" }],
-      "title": "NIST / SOC 2 Compliance",
+      "targets": [{ "expr": "ai_governance_stale_controls_count + ai_governance_unknown_controls_count", "legendFormat": "Stale / Unknown", "refId": "A" }],
+      "title": "Stale / Unknown Controls",
       "type": "stat"
     },
     {
       "collapsed": false,
       "gridPos": { "h": 1, "w": 24, "x": 0, "y": 5 },
       "id": 101,
-      "title": "⚡ TIER 1 & HIGH-FREQ TELEMETRY: LOSSLESS QUEUES, ECN & BUFFER OCCUPANCY",
+      "title": "LAB-SPECIFIC GOVERNANCE CONTROLS (EVALUATED FROM SIGNED EVIDENCE)",
+      "type": "row"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "Prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [
+            { "options": { "1": { "color": "green", "text": "PASS" }, "0": { "color": "yellow", "text": "UNKNOWN / STALE" }, "-1": { "color": "red", "text": "FAIL" } }, "type": "value" }
+          ],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "yellow", "value": 0 }, { "color": "green", "value": 1 }] }
+        }
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 0, "y": 6 },
+      "id": 5,
+      "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "auto", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
+      "targets": [{ "expr": "ai_governance_control_status{control_id='FABRIC-001'}", "legendFormat": "FABRIC-001", "refId": "A" }],
+      "title": "Lab 01: Fabric Buffer SLO",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "Prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [
+            { "options": { "1": { "color": "green", "text": "PASS" }, "0": { "color": "yellow", "text": "UNKNOWN / STALE" }, "-1": { "color": "red", "text": "FAIL" } }, "type": "value" }
+          ],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "yellow", "value": 0 }, { "color": "green", "value": 1 }] }
+        }
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 4, "y": 6 },
+      "id": 6,
+      "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "auto", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
+      "targets": [{ "expr": "ai_governance_control_status{control_id='NET-002'}", "legendFormat": "NET-002", "refId": "A" }],
+      "title": "Lab 02: NetDevOps Validation",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "Prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [
+            { "options": { "1": { "color": "green", "text": "PASS" }, "0": { "color": "yellow", "text": "UNKNOWN / STALE" }, "-1": { "color": "red", "text": "FAIL" } }, "type": "value" }
+          ],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "yellow", "value": 0 }, { "color": "green", "value": 1 }] }
+        }
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 8, "y": 6 },
+      "id": 7,
+      "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "auto", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
+      "targets": [{ "expr": "ai_governance_control_status{control_id='CLOUD-003'}", "legendFormat": "CLOUD-003", "refId": "A" }],
+      "title": "Lab 03: Cloud Path Assurance",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "Prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [
+            { "options": { "1": { "color": "green", "text": "PASS" }, "0": { "color": "yellow", "text": "UNKNOWN / STALE" }, "-1": { "color": "red", "text": "FAIL" } }, "type": "value" }
+          ],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "yellow", "value": 0 }, { "color": "green", "value": 1 }] }
+        }
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 12, "y": 6 },
+      "id": 8,
+      "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "auto", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
+      "targets": [{ "expr": "ai_governance_control_status{control_id='SIEM-004'}", "legendFormat": "SIEM-004", "refId": "A" }],
+      "title": "Lab 04: SIEM Threat Detection",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "Prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [
+            { "options": { "1": { "color": "green", "text": "PASS" }, "0": { "color": "yellow", "text": "UNKNOWN / STALE" }, "-1": { "color": "red", "text": "FAIL" } }, "type": "value" }
+          ],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "yellow", "value": 0 }, { "color": "green", "value": 1 }] }
+        }
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 16, "y": 6 },
+      "id": 9,
+      "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "auto", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
+      "targets": [{ "expr": "ai_governance_control_status{control_id='TEL-005'}", "legendFormat": "TEL-005", "refId": "A" }],
+      "title": "Lab 05: Telemetry Freshness",
+      "type": "stat"
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "Prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "mappings": [
+            { "options": { "1": { "color": "green", "text": "PASS" }, "0": { "color": "yellow", "text": "UNKNOWN / STALE" }, "-1": { "color": "red", "text": "FAIL" } }, "type": "value" }
+          ],
+          "thresholds": { "mode": "absolute", "steps": [{ "color": "red", "value": null }, { "color": "yellow", "value": 0 }, { "color": "green", "value": 1 }] }
+        }
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 20, "y": 6 },
+      "id": 10,
+      "options": { "colorMode": "background", "graphMode": "none", "justifyMode": "auto", "orientation": "auto", "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false }, "textMode": "auto" },
+      "targets": [{ "expr": "ai_governance_control_status{control_id='RAG-006'}", "legendFormat": "RAG-006", "refId": "A" }],
+      "title": "Lab 06: Zero-Trust RAG",
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 10 },
+      "id": 102,
+      "title": "EVIDENCE FRESHNESS & INGESTION TELEMETRY",
       "type": "row"
     },
     {
@@ -127,19 +210,16 @@
       "fieldConfig": {
         "defaults": {
           "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "lineWidth": 2 },
-          "unit": "decbytes"
+          "unit": "s"
         }
       },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 6 },
-      "id": 7,
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 11 },
+      "id": 11,
       "options": { "tooltip": { "mode": "multi", "sort": "desc" } },
       "targets": [
-        { "expr": "ai_fabric_queue_depth_bytes{queue='q3_rocev2_lossless'}", "legendFormat": "RoCEv2 Lossless (Q3)", "refId": "A" },
-        { "expr": "ai_fabric_queue_depth_bytes{queue='q0_best_effort'}", "legendFormat": "Best-Effort (Q0)", "refId": "B" },
-        { "expr": "ai_fabric_ecn_kmin_threshold_bytes", "legendFormat": "ECN Kmin Threshold", "refId": "C" },
-        { "expr": "ai_fabric_pfc_headroom_threshold_bytes", "legendFormat": "PFC Pause Threshold", "refId": "D" }
+        { "expr": "ai_governance_control_freshness_seconds", "legendFormat": "{{control_id}} Freshness (s)", "refId": "A" }
       ],
-      "title": "Switch Shared Buffer Queue Depth & Incast Thresholds",
+      "title": "Control Evidence Age (Freshness SLO: 300s)",
       "type": "timeseries"
     },
     {
@@ -147,117 +227,26 @@
       "fieldConfig": {
         "defaults": {
           "custom": { "drawStyle": "bars", "fillOpacity": 80, "lineWidth": 1 },
-          "unit": "pps"
-        }
-      },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 6 },
-      "id": 8,
-      "options": { "tooltip": { "mode": "multi", "sort": "desc" } },
-      "targets": [
-        { "expr": "rate(ai_fabric_ecn_marked_packets_total[10s])", "legendFormat": "ECN CE Marked Pkts/sec", "refId": "A" },
-        { "expr": "rate(ai_fabric_pfc_pause_frames_total[10s])", "legendFormat": "PFC Pause Frames/sec", "refId": "B" }
-      ],
-      "title": "Proactive ECN Congestion Marking vs PFC Pause Transmission",
-      "type": "timeseries"
-    },
-    {
-      "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 14 },
-      "id": 102,
-      "title": "🚀 TIER 2 & TIER 3: NETDEVOPS GITOPS DRIFT & SYNTHETIC MULTI-CLOUD PATH ASSURANCE",
-      "type": "row"
-    },
-    {
-      "datasource": { "type": "prometheus", "uid": "Prometheus" },
-      "fieldConfig": {
-        "defaults": {
-          "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "lineWidth": 2 },
-          "unit": "ms"
-        }
-      },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 15 },
-      "id": 9,
-      "options": { "tooltip": { "mode": "multi", "sort": "desc" } },
-      "targets": [
-        { "expr": "ai_synthetic_path_latency_ms{target='inference-us-east'}", "legendFormat": "US-East Direct (Sub-50ms)", "refId": "A" },
-        { "expr": "ai_synthetic_path_latency_ms{target='inference-eu-west'}", "legendFormat": "EU-West Hybrid Path", "refId": "B" },
-        { "expr": "ai_synthetic_path_latency_ms{target='local-ollama-cluster'}", "legendFormat": "Local GPU Mesh (Sub-5ms)", "refId": "C" }
-      ],
-      "title": "End-to-End Synthetic Probe Latency across Distributed AI Endpoints",
-      "type": "timeseries"
-    },
-    {
-      "datasource": { "type": "prometheus", "uid": "Prometheus" },
-      "fieldConfig": {
-        "defaults": {
-          "custom": { "drawStyle": "line", "lineInterpolation": "stepAfter", "lineWidth": 2 },
           "unit": "short"
         }
       },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 15 },
-      "id": 10,
-      "options": { "tooltip": { "mode": "multi", "sort": "desc" } },
-      "targets": [
-        { "expr": "ai_netdevops_cicd_pipeline_runs_total", "legendFormat": "Total CI/CD Validations", "refId": "A" },
-        { "expr": "ai_netdevops_config_drift_events_total", "legendFormat": "Drift Auto-Remediations", "refId": "B" },
-        { "expr": "ai_netdevops_pytest_passed_assertions_total", "legendFormat": "PyTest State Assertions Passed", "refId": "C" }
-      ],
-      "title": "NetDevOps CI/CD Pipeline Automation & Configuration Drift Accounting",
-      "type": "timeseries"
-    },
-    {
-      "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 23 },
-      "id": 103,
-      "title": "🛡️ TIER 4 & TIER 5: AI SECOPS SIEM & ZERO-TRUST RAG GUARDRAILS",
-      "type": "row"
-    },
-    {
-      "datasource": { "type": "prometheus", "uid": "Prometheus" },
-      "fieldConfig": {
-        "defaults": {
-          "custom": { "drawStyle": "bars", "fillOpacity": 85, "lineWidth": 1 },
-          "unit": "short"
-        }
-      },
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 24 },
-      "id": 11,
-      "options": { "tooltip": { "mode": "multi", "sort": "desc" } },
-      "targets": [
-        { "expr": "ai_secops_rogue_exfiltration_bursts_total", "legendFormat": "Rogue LLM Exfiltration Alerts", "refId": "A" },
-        { "expr": "ai_secops_prompt_injections_detected_total", "legendFormat": "Zeek/Wazuh Detected Injection Attacks", "refId": "B" },
-        { "expr": "ai_secops_suricata_flow_anomalies_total", "legendFormat": "Suricata Egress Flow Anomalies", "refId": "C" }
-      ],
-      "title": "Tier 4 SIEM Threat Detection (Zeek / Suricata / Wazuh)",
-      "type": "timeseries"
-    },
-    {
-      "datasource": { "type": "prometheus", "uid": "Prometheus" },
-      "fieldConfig": {
-        "defaults": {
-          "custom": { "drawStyle": "line", "lineInterpolation": "smooth", "lineWidth": 2 },
-          "unit": "short"
-        }
-      },
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 24 },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 11 },
       "id": 12,
       "options": { "tooltip": { "mode": "multi", "sort": "desc" } },
       "targets": [
-        { "expr": "ai_rag_prompt_injections_blocked_total", "legendFormat": "OWASP LLM01 Injections Blocked (400)", "refId": "A" },
-        { "expr": "ai_rag_pii_redactions_total", "legendFormat": "OWASP LLM02 PII Tokens Redacted", "refId": "B" },
-        { "expr": "ai_rag_unauthenticated_blocks_total", "legendFormat": "OWASP LLM06 Unauthenticated Rejections", "refId": "C" }
+        { "expr": "ai_governance_evidence_ingestion_total", "legendFormat": "Envelopes Ingested: {{source_lab}}", "refId": "A" }
       ],
-      "title": "Tier 5 Zero-Trust RAG Guardrails & RBAC Pre-Filter Telemetry",
+      "title": "Cumulative Evidence Envelope Ingestion by Lab",
       "type": "timeseries"
     }
   ],
   "refresh": "2s",
   "schemaVersion": 38,
   "style": "dark",
-  "tags": ["capstone", "tier6", "cisco-ndb", "splunk-itsi", "ai-infrastructure", "zero-trust", "lossless-fabric"],
+  "tags": ["lab07", "control-plane", "evidence-architecture", "governance", "ai-infrastructure"],
   "time": { "from": "now-15m", "to": "now" },
   "timepicker": { "refresh_intervals": ["1s", "2s", "5s", "10s"] },
   "timezone": "browser",
-  "title": "AI Infrastructure Operations & Governance Single-Pane-of-Glass",
+  "title": "Unified AI Infrastructure Control Plane & Evidence Dashboard",
   "uid": "ai-infra-cockpit-single-pane"
 }

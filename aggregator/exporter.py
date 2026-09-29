@@ -1,62 +1,36 @@
-from prometheus_client import Gauge, Counter, Histogram
+from prometheus_client import Gauge, Counter
+from engine import ControlEvaluationEngine
 
 # ==============================================================================
-# TIER 1 & HIGH-FREQ TELEMETRY: LOSSLESS FABRIC & SWITCH BUFFER QUEUES
+# PROMETHEUS METRICS DRIVEN BY ACTUAL EVIDENCE EVALUATION
 # ==============================================================================
-FABRIC_HEALTH = Gauge('ai_fabric_cluster_health_status', '0 = Optimal, 1 = Degraded')
-QUEUE_DEPTH = Gauge('ai_fabric_queue_depth_bytes', 'Switch shared buffer occupancy in bytes', ['queue'])
-ECN_KMIN_THRESHOLD = Gauge('ai_fabric_ecn_kmin_threshold_bytes', 'ECN WRED early marking threshold bytes')
-PFC_PAUSE_THRESHOLD = Gauge('ai_fabric_pfc_headroom_threshold_bytes', 'PFC pause frame threshold bytes')
-ECN_MARKED_PKTS = Counter('ai_fabric_ecn_marked_packets_total', 'Cumulative ECN Congestion Experienced (CE) marked packets')
-PFC_PAUSE_FRAMES = Counter('ai_fabric_pfc_pause_frames_total', 'Cumulative IEEE 802.1Qbb PFC pause frames transmitted')
+OVERALL_GOVERNANCE_STATUS = Gauge('ai_governance_overall_status', '1 = PASS, 0 = DEGRADED/UNKNOWN, -1 = FAIL')
+TOTAL_REGISTERED_CONTROLS = Gauge('ai_governance_total_controls_count', 'Total governance controls in catalog')
+PASSING_CONTROLS_COUNT = Gauge('ai_governance_passing_controls_count', 'Controls with verified passing evidence')
+FAILING_CONTROLS_COUNT = Gauge('ai_governance_failing_controls_count', 'Controls with failing evidence')
+STALE_CONTROLS_COUNT = Gauge('ai_governance_stale_controls_count', 'Controls whose evidence exceeded freshness SLO')
+UNKNOWN_CONTROLS_COUNT = Gauge('ai_governance_unknown_controls_count', 'Controls with zero evidence received')
 
-# ==============================================================================
-# TIER 2: NETDEVOPS GITOPS AUTOMATION & CONFIGURATION DRIFT
-# ==============================================================================
-NETDEVOPS_PIPELINE_RUNS = Counter('ai_netdevops_cicd_pipeline_runs_total', 'Total CI/CD pipeline executions')
-NETDEVOPS_DRIFT_EVENTS = Counter('ai_netdevops_config_drift_events_total', 'Automated configuration drift remediation events')
-NETDEVOPS_PYTEST_ASSERTIONS = Counter('ai_netdevops_pytest_passed_assertions_total', 'Total passing pytest network state assertions')
+# Per-Control Status Gauge (1 = PASS, 0 = UNKNOWN/STALE, -1 = FAIL)
+CONTROL_STATUS = Gauge('ai_governance_control_status', 'Status of individual governance control', ['control_id', 'tier', 'source_lab'])
+CONTROL_FRESHNESS = Gauge('ai_governance_control_freshness_seconds', 'Seconds since last evidence ingestion', ['control_id'])
 
-# ==============================================================================
-# TIER 3: HYBRID MULTI-CLOUD SYNTHETIC PATH ASSURANCE
-# ==============================================================================
-SYNTHETIC_PATH_LATENCY = Gauge('ai_synthetic_path_latency_ms', 'Synthetic probe round-trip latency in ms', ['target'])
-ENDPOINT_AVAILABILITY = Gauge('ai_endpoint_synthetic_availability_percent', 'Synthetic endpoint SLO availability percentage')
+EVIDENCE_INGESTION_TOTAL = Counter('ai_governance_evidence_ingestion_total', 'Total evidence envelopes ingested', ['source_lab'])
 
-# ==============================================================================
-# TIER 4: AI SECOPS SIEM & BEHAVIORAL THREAT MONITORING
-# ==============================================================================
-SECOPS_ACTIVE_THREATS = Gauge('ai_secops_active_security_threats', 'Active unmitigated threat alerts', ['severity'])
-SECOPS_EXFILTRATION_BURSTS = Counter('ai_secops_rogue_exfiltration_bursts_total', 'Rogue LLM exfiltration attempt alerts')
-SECOPS_INJECTIONS_DETECTED = Counter('ai_secops_prompt_injections_detected_total', 'SIEM detected prompt injection signatures')
-SECOPS_SURICATA_ANOMALIES = Counter('ai_secops_suricata_flow_anomalies_total', 'Suricata anomalous flow triggers')
+def update_prometheus_metrics(engine: ControlEvaluationEngine):
+    """Refreshes Prometheus gauges directly from actual control evaluation findings."""
+    posture = engine.get_posture()
 
-# ==============================================================================
-# TIER 5: ZERO-TRUST RAG RBAC & GUARDRAIL ENFORCEMENT
-# ==============================================================================
-RAG_CROSS_TENANT_LEAKS = Gauge('ai_rag_cross_tenant_leaks_total', 'Total detected cross-tenant vector chunk leaks (Target: 0)')
-RAG_PROMPT_INJECTIONS_BLOCKED = Counter('ai_rag_prompt_injections_blocked_total', 'OWASP LLM01 Injections Blocked (400 Bad Request)')
-RAG_PII_REDACTIONS = Counter('ai_rag_pii_redactions_total', 'OWASP LLM02 Ingestion PII/PCI Redactions')
-RAG_UNAUTH_BLOCKS = Counter('ai_rag_unauthenticated_blocks_total', 'OWASP LLM06 Unauthenticated Access Rejections (401/403)')
+    status_map = {"PASS": 1.0, "DEGRADED": 0.0, "UNKNOWN": 0.0, "STALE": 0.0, "FAIL": -1.0}
+    OVERALL_GOVERNANCE_STATUS.set(status_map.get(posture.overall_status, 0.0))
+    TOTAL_REGISTERED_CONTROLS.set(posture.total_controls)
+    PASSING_CONTROLS_COUNT.set(posture.passing_controls)
+    FAILING_CONTROLS_COUNT.set(posture.failing_controls)
+    STALE_CONTROLS_COUNT.set(posture.stale_controls)
+    UNKNOWN_CONTROLS_COUNT.set(posture.unknown_controls)
 
-# ==============================================================================
-# TIER 6: GOVERNANCE, COMPLIANCE & CAPSTONE SLA POSTURE
-# ==============================================================================
-GOVERNANCE_COMPLIANCE_SCORE = Gauge('ai_governance_compliance_score', 'NIST AI RMF / SOC 2 Compliance Score Percentage')
-
-def initialize_defaults():
-    FABRIC_HEALTH.set(0)
-    ECN_KMIN_THRESHOLD.set(65536)     # 64 KB
-    PFC_PAUSE_THRESHOLD.set(196608)   # 192 KB
-    ENDPOINT_AVAILABILITY.set(99.98)
-    RAG_CROSS_TENANT_LEAKS.set(0)
-    GOVERNANCE_COMPLIANCE_SCORE.set(100.0)
-    
-    # Initialize basic gauges
-    QUEUE_DEPTH.labels(queue='q3_rocev2_lossless').set(18400)
-    QUEUE_DEPTH.labels(queue='q0_best_effort').set(4200)
-    SYNTHETIC_PATH_LATENCY.labels(target='inference-us-east').set(28.4)
-    SYNTHETIC_PATH_LATENCY.labels(target='inference-eu-west').set(74.2)
-    SYNTHETIC_PATH_LATENCY.labels(target='local-ollama-cluster').set(3.1)
-    SECOPS_ACTIVE_THREATS.labels(severity='high').set(0)
-    SECOPS_ACTIVE_THREATS.labels(severity='medium').set(0)
+    for c in posture.controls:
+        c_val = 1.0 if c.status == "PASS" else (-1.0 if c.status == "FAIL" else 0.0)
+        CONTROL_STATUS.labels(control_id=c.control_id, tier=c.tier, source_lab=c.source_lab).set(c_val)
+        if c.freshness_seconds is not None:
+            CONTROL_FRESHNESS.labels(control_id=c.control_id).set(c.freshness_seconds)

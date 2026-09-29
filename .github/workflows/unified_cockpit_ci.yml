@@ -1,4 +1,4 @@
-name: Tier 6 - Unified AI Infrastructure Cockpit CI
+name: Lab 07 - Unified AI Infrastructure Control Plane CI
 
 on:
   push:
@@ -6,9 +6,12 @@ on:
   pull_request:
     branches: [ main ]
 
+permissions:
+  contents: read
+
 jobs:
-  validate-unified-cockpit:
-    name: validate-unified-cockpit
+  validate-control-plane:
+    name: validate-control-plane
     runs-on: ubuntu-latest
 
     steps:
@@ -25,7 +28,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Launch Unified Cockpit Stack
+      - name: Launch Control Plane Stack
         run: |
           docker compose up -d --build
 

@@ -1,105 +1,135 @@
-# 🏛️ Tier 6: Unified AI Infrastructure Operations & Governance Cockpit (Capstone)
+# LAB 07: Unified AI Infrastructure Control Plane
 
 [![CI/CD Pipeline](https://github.com/Namanbhatt-01/ai-infrastructure-unified-governance-cockpit/actions/workflows/unified_cockpit_ci.yml/badge.svg)](https://github.com/Namanbhatt-01/ai-infrastructure-unified-governance-cockpit/actions/workflows/unified_cockpit_ci.yml)
 [![Release](https://img.shields.io/badge/Release-v1.0.0-blue.svg)](https://github.com/Namanbhatt-01/ai-infrastructure-unified-governance-cockpit/releases/tag/v1.0.0)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Footprint](https://img.shields.io/badge/Memory%20Footprint-~1.0%20GB%20RAM-success.svg)](docker-compose.yml)
-[![Cisco NDB / Splunk Equivalent](https://img.shields.io/badge/Architecture-Cisco%20NDB%20%2F%20Splunk%20ITSI-purple.svg)](docs/cisco_ndb_splunk_comparative_memo.md)
 
-An enterprise-grade, single-pane-of-glass operational telemetry cockpit and governance platform synthesizing all 5 underlying AI data center infrastructure tiers on a **₹0 software budget**, optimized for **Apple Silicon (M1 ARM64)** and standard developer workstations.
+A reproducible reference architecture for evidence-based infrastructure governance and control plane aggregation. This system synthesizes telemetry, validation outputs, and security assertions across the 6 underlying technical labs using machine-readable evidence contracts rather than simulated dashboard metrics.
 
 ---
 
-## 📌 Executive Architecture & Multi-Tier Synthesis
+## 1. Problem Statement & Architecture
 
-This Capstone project synthesizes the entire portfolio into an integrated operational command center:
+In large-scale AI infrastructure deployments, individual operational tools (switch telemetry collectors, CI/CD validators, blackbox path probers, SIEM analyzers, and vector database guardrails) operate as isolated silos. Traditional dashboard aggregators often mask outages by displaying synthetic averages or hardcoded "healthy" states.
+
+This project implements an **Evidence-Driven Control Plane**:
+1. It does not synthesize artificial operational truth.
+2. It consumes signed, machine-readable evidence envelopes (`EvidenceRecord`) emitted by underlying systems.
+3. It evaluates controls against explicit freshness Service Level Objectives (SLOs) and assertion outcomes.
+4. It derives explainable governance posture states: `PASS`, `DEGRADED`, `UNKNOWN`, `STALE`, or `FAIL`.
 
 ```
-┌────────────────────────────────────────────────────────────────────────────────────────┐
-│               TIER 6: UNIFIED SINGLE-PANE-OF-GLASS GOVERNANCE COCKPIT                  │
-│               (Grafana :3000 | FastAPI Aggregator :8080 | Prometheus :9090)            │
-└───────────────────────────────────────────┬────────────────────────────────────────────┘
-                                            │ Correlated Multi-Tier Telemetry Stream
-    ┌───────────────────┬───────────────────┼───────────────────┬───────────────────┐
-    ▼                   ▼                   ▼                   ▼                   ▼
-┌──────────────┐ ┌──────────────┐ ┌──────────────┐ ┌──────────────┐ ┌──────────────┐
-│    TIER 1    │ │    TIER 2    │ │    TIER 3    │ │    TIER 4    │ │    TIER 5    │
-│ Lossless AI  │ │  NetDevOps   │ │ Hybrid Cloud │ │  AI SecOps   │ │  Zero-Trust  │
-│    Fabric    │ │    CI/CD     │ │  Assurance   │ │  SIEM (Zeek) │ │ RAG Security │
-├──────────────┤ ├──────────────┤ ├──────────────┤ ├──────────────┤ ├──────────────┤
-│ • RoCEv2     │ │ • GitOps IaC │ │ • Synthetic  │ │ • Rogue LLM  │ │ • Qdrant DB  │
-│ • ECN WRED   │ │ • PyTest     │ │   Blackbox   │ │   Detection  │ │ • RBAC Pre-  │
-│ • PFC Head-  │ │ • Config     │ │ • Hop Latency│ │ • Suricata   │ │   Filtering  │
-│   room Sizing│ │   Drift Auto-│ │ • Cloud SLO  │ │   Egress Flow│ │ • Prompt Inj.│
-│ • Incast Obs.│ │   Remediate  │ │   Monitoring │ │   Alerts     │ │   Guardrails │
-└──────────────┘ └──────────────┘ └──────────────┘ └──────────────┘ └──────────────┘
+                    ┌────────────────────────────────────────┐
+                    │     LAB 07: UNIFIED CONTROL PLANE      │
+                    │   FastAPI Aggregator & Engine (:8080)  │
+                    │   Prometheus TSDB (:9090)              │
+                    │   Grafana Single-Pane Dashboard (:3000)│
+                    └───────────────────▲────────────────────┘
+                                        │
+                         HTTP Evidence Ingestion API
+                         POST /api/v1/evidence/ingest
+                                        │
+    ┌───────────────┬───────────────────┼───────────────────┬───────────────┐
+    │               │                   │                   │               │
+┌───┴──────────┐ ┌──┴────────────┐ ┌────┴────────────┐ ┌────┴────────────┐ ┌───┴────────────┐
+│    LAB 01    │ │    LAB 02     │ │    LAB 03       │ │    LAB 04       │ │   LAB 05 / 06   │
+│ Lossless AI  │ │  NetDevOps    │ │  Hybrid Cloud   │ │  AI SIEM SecOps │ │ Telemetry Ingest│
+│    Fabric    │ │  CI/CD Drift  │ │  Path Assurance │ │  Threat Defense │ │ Zero-Trust RAG  │
+└──────────────┘ └───────────────┘ └─────────────────┘ └─────────────────┘ └─────────────────┘
 ```
 
 ---
 
-## 🎯 Six-Tier Portfolio Integration Matrix
+## 2. Six-Tier Control Catalog & Evidence Mapping
 
-| Tier & Subsystem | Core Protocol / Framework | Integrated Lab Project | Operational Telemetry & Health Signals |
-| :--- | :--- | :--- | :--- |
-| **Tier 1: AI Compute Fabric** | RoCEv2, ECN (RFC 3168), PFC (802.1Qbb) | [Lossless Fabric Lab](https://github.com/Namanbhatt-01/lossless-ai-fabric-emulation-lab) | Switch buffer queue depths, ECN marking rates, PFC pause frame counts. |
-| **Tier 2: NetDevOps Automation** | GitOps, Scrapli, Pytest, GitHub CI | [NetDevOps CI/CD Lab](https://github.com/Namanbhatt-01/netdevops-cicd-pipeline-lab) | CI/CD run velocity, automated state assertions, configuration drift remediations. |
-| **Tier 3: Hybrid Cloud Assurance** | Prometheus Blackbox, ICMP, TCP, HTTP | [Hybrid Cloud Assurance Lab](https://github.com/Namanbhatt-01/hybrid-cloud-assurance-telemetry-lab) | Multi-cloud AI endpoint latency (P99), DNS lookup time, hop jitter, SLO availability %. |
-| **Tier 4: Enterprise AI SecOps** | Wazuh SIEM, OpenSearch, Zeek, Suricata | [SIEM Security Lab](https://github.com/Namanbhatt-01/siem-security-ai-workloads-lab) | Active threat counters, rogue LLM data exfiltration alerts, egress flow anomalies. |
-| **Tier 5: Zero-Trust RAG Security** | Qdrant Rust OSS, RBAC Pre-Filter, Bandit | [Zero-Trust RAG Lab](https://github.com/Namanbhatt-01/zero-trust-ai-rag-security-lab) | Cross-tenant chunk isolation (0 leaks), prompt injection blocks (400), PII redactions. |
-| **Tier 6: Unified Ops & Governance** | Grafana 10.2, Prometheus TSDB, FastAPI | **Current Capstone Repository** | Single-pane cockpit correlating all tiers into unified KPIs & compliance scores. |
+| Control ID | Governance Control Name | Target Lab | Freshness SLO | Evaluated Invariant |
+| :--- | :--- | :--- | :--- | :--- |
+| **`FABRIC-001`** | Lossless Queue & ECN Congestion | [Lab 01 (Lossless Fabric)](https://github.com/Namanbhatt-01/lossless-ai-fabric-emulation-lab) | 300s | Queue depth strictly below headroom threshold; zero uncontrolled packet drop. |
+| **`NET-002`** | GitOps Change Validation & Drift | [Lab 02 (NetDevOps CI/CD)](https://github.com/Namanbhatt-01/netdevops-cicd-pipeline-lab) | 300s | 100% automated state assertion pass rate on pre-deployment validation. |
+| **`CLOUD-003`** | Hybrid Cloud Endpoint Latency SLO | [Lab 03 (Hybrid Cloud Assurance)](https://github.com/Namanbhatt-01/hybrid-cloud-assurance-telemetry-lab) | 300s | Multi-cloud inference probe P99 RTT < 50ms; synthetic availability >= 99.5%. |
+| **`SIEM-004`** | AI SecOps Threat Detection | [Lab 04 (SIEM AI Security)](https://github.com/Namanbhatt-01/siem-security-ai-workloads-lab) | 300s | Zero unmitigated vector DB exfiltration bursts or rogue GPU egress anomalies. |
+| **`TEL-005`** | High-Frequency Telemetry Pipeline | [Lab 05 (High-Frequency Telemetry)](https://github.com/Namanbhatt-01/high-frequency-telemetry-ingestion-lab) | 300s | Buffer telemetry streaming cadence <= 100ms; zero collector pipeline drops. |
+| **`RAG-006`** | Zero-Trust RAG Policy & Isolation | [Lab 06 (Zero-Trust RAG)](https://github.com/Namanbhatt-01/zero-trust-ai-rag-security-lab) | 300s | Zero cross-tenant chunk retrieval leaks across all evaluation queries. |
 
 ---
 
-## 🚀 Quickstart & Local Reproduction
+## 3. Evidence Envelope Specification
 
-### 1. Launch the Unified Operations Stack
+Every underlying technical laboratory produces evidence matching the canonical JSON schema:
+
+```json
+{
+  "schema_version": "1.0",
+  "experiment": {
+    "id": "rag-security-001",
+    "name": "Zero-Trust Retrieval Isolation and Policy Invariants"
+  },
+  "execution": {
+    "run_id": "run-20260929-1420",
+    "timestamp": "2026-09-29T14:20:00Z",
+    "environment": "docker-compose",
+    "platform": "darwin-arm64"
+  },
+  "measurements": [
+    { "metric": "cross_tenant_chunks_leaked", "value": 0, "target": 0, "mode": "measured" }
+  ],
+  "assertions": [
+    { "id": "RAG-SEC-001", "name": "Cross-Tenant Vector Isolation Invariant", "passed": true }
+  ],
+  "result": "passed"
+}
+```
+
+---
+
+## 4. State Transition & Evaluation Engine
+
+The evaluation engine computes governance state using deterministic rules:
+- **`UNKNOWN`**: No evidence has been ingested for this control.
+- **`STALE`**: Last ingested evidence exceeds `freshness_slo_seconds`.
+- **`FAIL`**: Evidence contains one or more failed assertions (`passed: false`).
+- **`PASS`**: Ingested within SLO window and all assertions verified.
+
+---
+
+## 5. Quickstart & Local Reproduction
+
+### Prerequisites
+- Docker & Docker Compose (or OrbStack on macOS)
+- Python 3.11+
+
+### Step 1: Start the Control Plane Stack
 ```bash
-# Start Aggregator, Prometheus, and Grafana in background
 make up
 ```
 
-### 2. Verify Service Endpoints
-- **Grafana Cockpit Dashboard**: [http://localhost:3000](http://localhost:3000) *(Anonymous Admin enabled)*
-- **Prometheus TSDB Engine**: [http://localhost:9090](http://localhost:9090)
-- **FastAPI Telemetry Aggregator**: [http://localhost:8080/docs](http://localhost:8080/docs)
-- **Executive Summary API**: [http://localhost:8080/api/v1/cockpit-summary](http://localhost:8080/api/v1/cockpit-summary)
+### Step 2: Verify Endpoints
+- **Grafana Dashboard**: [http://localhost:3000](http://localhost:3000) *(Anonymous Admin enabled)*
+- **Prometheus TSDB**: [http://localhost:9090](http://localhost:9090)
+- **FastAPI Control Plane API**: [http://localhost:8080/docs](http://localhost:8080/docs)
+- **Governance Posture Summary**: [http://localhost:8080/api/v1/summary](http://localhost:8080/api/v1/summary)
 
-### 3. Run Automated Verification Suite
+### Step 3: Run the Verification Suite
 ```bash
 python3 verify_unified_cockpit.py
 ```
 
-### 4. Teardown
+### Step 4: Teardown
 ```bash
 make down
 ```
 
 ---
 
-## 📊 Live Verification & Testbed Assertions
+## 6. Known Limitations
 
-```text
-================================================================================
-      TIER 6: UNIFIED AI INFRASTRUCTURE OPERATIONS & GOVERNANCE AUDIT       
-================================================================================
-  [✅ PASS] Aggregator Service Health & Readiness
-  [✅ PASS] Executive Single-Pane-of-Glass Summary API
-  [✅ PASS] Dynamic Cross-Tier Telemetry Ingestion
-  [✅ PASS] Prometheus TSDB Metric Scrape & Indexing
-  [✅ PASS] Grafana Provisioned Single-Pane Dashboard
-================================================================================
-🎉 ALL TIER 6 CAPSTONE INTEGRATION ASSERTIONS VERIFIED SUCCESSFULLY!
-```
+1. **Transport Boundary**: Evidence ingestion is currently implemented via HTTP POST and static file seed loading; production environments would utilize authenticated mTLS, gRPC streams, or Apache Kafka topics.
+2. **Persistence Boundary**: Control catalog state and ingested records are stored in-memory with file backup, rather than a persistent relational database like PostgreSQL.
+3. **Cryptographic Signatures**: Evidence envelopes include execution metadata (run ID, platform, timestamp) but currently lack asymmetric cryptographic signature verification (Ed25519/X.509).
 
 ---
 
-## 📚 Technical Documentation & Architecture Memos
+## 7. License
 
-- **Capstone Architecture Whitepaper**: [`docs/unified_ai_infrastructure_architecture_whitepaper.md`](docs/unified_ai_infrastructure_architecture_whitepaper.md)
-- **Cisco NDB & Splunk Comparative Engineering Memo**: [`docs/cisco_ndb_splunk_comparative_memo.md`](docs/cisco_ndb_splunk_comparative_memo.md)
-- **Real-Time Execution Evidence**: [`poc/REALTIME_EVIDENCE.md`](poc/REALTIME_EVIDENCE.md)
-
----
-
-## 📜 License
-This project is licensed under the [MIT License](LICENSE).
+MIT License. See [LICENSE](LICENSE) for details.

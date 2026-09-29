@@ -1,0 +1,42 @@
+{
+  "schema_version": "1.0",
+  "experiment": {
+    "id": "wan-latency-001",
+    "name": "Synthetic Multi-Cloud AI Endpoint Latency Probing"
+  },
+  "execution": {
+    "run_id": "assurance-20260929-113000",
+    "timestamp": "2026-09-29T12:30:00Z",
+    "environment": "prometheus-blackbox",
+    "platform": "darwin-arm64"
+  },
+  "measurements": [
+    {
+      "metric": "p99_probe_rtt_ms",
+      "value": 28.4,
+      "target": 50.0,
+      "mode": "measured"
+    },
+    {
+      "metric": "synthetic_availability_percent",
+      "value": 99.98,
+      "target": 99.9,
+      "mode": "derived"
+    }
+  ],
+  "assertions": [
+    {
+      "id": "ASSURANCE-ASSERT-001",
+      "name": "Multi-Cloud Inference SLO Compliance",
+      "passed": true,
+      "detail": "P99 latency of 28.4ms is within the 50ms SLO threshold."
+    },
+    {
+      "id": "ASSURANCE-ASSERT-002",
+      "name": "Degraded Path Alert Triggering",
+      "passed": true,
+      "detail": "Prometheus Alertmanager triggered alert within 2 seconds of injected delay."
+    }
+  ],
+  "result": "passed"
+}

@@ -1,0 +1,41 @@
+{
+  "schema_version": "1.0",
+  "experiment": {
+    "id": "netdevops-ci-001",
+    "name": "Automated Network State Snapshot and Drift Assertion"
+  },
+  "execution": {
+    "run_id": "netdevops-20260929-111500",
+    "timestamp": "2026-09-29T12:15:00Z",
+    "environment": "frrouting-containers",
+    "platform": "darwin-arm64"
+  },
+  "measurements": [
+    {
+      "metric": "bgp_established_peers",
+      "value": 4.0,
+      "target": 4.0,
+      "mode": "measured"
+    },
+    {
+      "metric": "convergence_duration_seconds",
+      "value": 2.4,
+      "mode": "measured"
+    }
+  ],
+  "assertions": [
+    {
+      "id": "NETDEVOPS-ASSERT-001",
+      "name": "BGP Neighbor Adjacency State",
+      "passed": true,
+      "detail": "All 4 BGP peers transitioned to Established state."
+    },
+    {
+      "id": "NETDEVOPS-ASSERT-002",
+      "name": "Routing Table Drift Verification",
+      "passed": true,
+      "detail": "Zero unauthorized route additions or deletions detected."
+    }
+  ],
+  "result": "passed"
+}

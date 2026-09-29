@@ -1,0 +1,46 @@
+{
+  "schema_version": "1.0",
+  "experiment": {
+    "id": "telemetry-incast-001",
+    "name": "High-Frequency Streaming Telemetry and Incast Queue Capture"
+  },
+  "execution": {
+    "run_id": "telemetry-20260929-120000",
+    "timestamp": "2026-09-29T12:00:00Z",
+    "environment": "telegraf-influxdb-gnmi",
+    "platform": "darwin-arm64"
+  },
+  "measurements": [
+    {
+      "metric": "streaming_cadence_ms",
+      "value": 100.0,
+      "target": 100.0,
+      "mode": "measured"
+    },
+    {
+      "metric": "peak_incast_queue_occupancy_percent",
+      "value": 99.4,
+      "mode": "emulated"
+    },
+    {
+      "metric": "transient_drops_captured",
+      "value": 1473.0,
+      "mode": "measured"
+    }
+  ],
+  "assertions": [
+    {
+      "id": "TELEMETRY-ASSERT-001",
+      "name": "Sub-Second Ingestion Rate",
+      "passed": true,
+      "detail": "Ingested 10 points/sec with 100ms cadence into InfluxDB."
+    },
+    {
+      "id": "TELEMETRY-ASSERT-002",
+      "name": "Incast Microburst Detection",
+      "passed": true,
+      "detail": "Captured transient 1473 drop spike completely invisible to standard 300s SNMP polling."
+    }
+  ],
+  "result": "passed"
+}

@@ -1,21 +1,60 @@
-from pydantic import BaseModel, Field
-from typing import Dict, Any, List, Optional
+from typing import List, Dict, Any, Optional, Literal
 from datetime import datetime
+from pydantic import BaseModel, Field
 
-class TelemetryEvent(BaseModel):
+ControlStatusType = Literal["PASS", "FAIL", "DEGRADED", "UNKNOWN", "STALE"]
+
+class ExperimentMeta(BaseModel):
+    id: str
+    name: str
+
+class ExecutionMeta(BaseModel):
+    run_id: str
     timestamp: datetime = Field(default_factory=datetime.utcnow)
-    tier: str = Field(..., description="Source architectural tier: tier1_fabric, tier2_netdevops, tier3_assurance, tier4_secops, tier5_rag")
-    metric_name: str
+    environment: str = "docker-compose"
+    platform: str = "linux-arm64"
+    git_sha: Optional[str] = None
+
+class Measurement(BaseModel):
+    metric: str
     value: float
-    labels: Dict[str, str] = Field(default_factory=dict)
-    event_metadata: Optional[Dict[str, Any]] = None
+    target: Optional[float] = None
+    unit: Optional[str] = None
+    mode: Literal["measured", "simulated", "emulated", "derived", "assumed"] = "measured"
 
-class CockpitSummary(BaseModel):
+class Assertion(BaseModel):
+    id: str
+    name: str
+    passed: bool
+    detail: Optional[str] = None
+
+class EvidenceRecord(BaseModel):
+    schema_version: str = "1.0"
+    experiment: ExperimentMeta
+    execution: ExecutionMeta
+    measurements: List[Measurement] = Field(default_factory=list)
+    assertions: List[Assertion] = Field(default_factory=list)
+    result: Literal["passed", "failed", "degraded", "unknown"] = "passed"
+
+class ControlFinding(BaseModel):
+    control_id: str
+    name: str
+    tier: str
+    source_lab: str
+    status: ControlStatusType
+    last_observed: Optional[datetime] = None
+    freshness_seconds: Optional[int] = None
+    freshness_slo_seconds: int = 300
+    evidence_run_id: Optional[str] = None
+    confidence: Literal["verified", "provisional", "unverified"] = "unverified"
+    reason: str
+
+class GovernancePosture(BaseModel):
     timestamp: datetime = Field(default_factory=datetime.utcnow)
-    fabric_status: str
-    active_threats: int
-    cross_tenant_leaks: int
-    p99_inference_latency_ms: float
-    slo_availability_percent: float
-    compliance_score_percent: float
-    tier_health: Dict[str, str]
+    overall_status: ControlStatusType
+    total_controls: int
+    passing_controls: int
+    failing_controls: int
+    stale_controls: int
+    unknown_controls: int
+    controls: List[ControlFinding]
